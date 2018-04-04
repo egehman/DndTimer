@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">DndTimer</string>
+    <string name="btn_start">Start Game</string>
+    <string name="btn_add">Add Player</string>
+    <string name="hint_init">Initiative</string>
+    <string name="hint_name">Player Name</string>
+    <string name="text_player_name">Player Name</string>
+    <string name="text_initiative">Initiative</string>
+</resources>
