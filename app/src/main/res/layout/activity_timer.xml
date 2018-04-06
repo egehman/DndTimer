@@ -26,7 +26,17 @@
         android:textStyle="bold"
         android:shadowDx="1.5"
         android:shadowDy="1.3"
+        android:text="1:00"
         android:shadowRadius="1.6"/>
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pgbCountdownBar"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:progressTint="@color/colorPrimaryDark"
+        android:progress="100"
+        />
 
     <RelativeLayout
         android:layout_width="wrap_content"

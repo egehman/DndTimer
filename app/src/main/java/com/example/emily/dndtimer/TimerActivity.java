@@ -1,13 +1,16 @@
 package com.example.emily.dndtimer;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.support.annotation.ColorRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -18,7 +21,10 @@ import java.util.ArrayList;
 
 public class TimerActivity extends AppCompatActivity implements View.OnClickListener {
 
-    static final String time = "1:00";
+    static final String TIME = "1:00";
+    static final long INITIAL_TIME = 60000; // 1 Minute
+    static final long INTERVAL = 1000; //1 Second
+    static final int INITIAL_TIME_S = 60; //Initial time in seconds
 
     private TextView txtPlayerName;
     //private TextView txtNextPlayer;
@@ -28,6 +34,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     private Button btnPause;
     private Button btnResume;
     private Button btnSkip;
+    private ProgressBar pgbCountdownBar;
 
     private ArrayList<String> playerList;
     private String currentPlayer;
@@ -43,14 +50,13 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.activity_timer);
 
         txtPlayerName = findViewById(R.id.txtPlayerName);
-        //txtNextPlayer = findViewById(R.id.txtNextPlayer);
         lstPlayerList = findViewById(R.id.lstNextPlayer);
         txtCountdownTimer = findViewById(R.id.txtCountdownTimer);
         btnStart = findViewById(R.id.btnStart);
         btnPause = findViewById(R.id.btnPause);
         btnResume = findViewById(R.id.btnResume);
         btnSkip = findViewById(R.id.btnSkip);
-
+        pgbCountdownBar = findViewById(R.id.pgbCountdownBar);
 
         playerList = new ArrayList<>();
         //Add Players for testing
@@ -68,7 +74,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         btnStart.setVisibility(View.VISIBLE);
         btnPause.setVisibility(View.INVISIBLE);
         btnResume.setVisibility(View.INVISIBLE);
-        txtCountdownTimer.setText(time);
+        txtCountdownTimer.setText(TIME);
 
         isPaused = true;
         isCancelled = false;
@@ -124,10 +130,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         isPaused = false;
         isCancelled = false;
 
-        long initialTime = 60000; // 1 minute
-        long countDownInterval = 1000; // 1 Second
-
-        CountDownTimer timer = new CountDownTimer(initialTime, countDownInterval) {
+        CountDownTimer timer = new CountDownTimer(INITIAL_TIME, INTERVAL) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (isPaused || isCancelled) {
@@ -141,17 +144,6 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void onFinish() {
                 btnPause.setEnabled(false);
-                ResetTimer();
-            }
-
-            private void UpdateTimer(long millisUntilFinished) {
-                long secondsRemaining = millisUntilFinished / 1000;
-                String timeRemaining = secondsRemaining / 60 + ":" + checkDigit(secondsRemaining % 60);
-                txtCountdownTimer.setText(timeRemaining);
-            }
-
-            private String checkDigit(long number) {
-                return number < 10 ? "0" + number : String.valueOf(number);
             }
 
         }.start();
@@ -171,9 +163,8 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         isCancelled = false;
 
         long initialTime = timeRemaining;
-        long countDownInterval = 1000; // 1 Second
 
-        CountDownTimer timer = new CountDownTimer(initialTime, countDownInterval) {
+        CountDownTimer timer = new CountDownTimer(initialTime, INTERVAL) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (isPaused || isCancelled) {
@@ -189,16 +180,6 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
                 btnPause.setEnabled(false);
             }
 
-            private void UpdateTimer(long millisUntilFinished) {
-                long secondsRemaining = millisUntilFinished / 1000;
-                String timeRemaining = secondsRemaining / 60 + ":" + checkDigit(secondsRemaining % 60);
-                txtCountdownTimer.setText(timeRemaining);
-            }
-
-            private String checkDigit(long number) {
-                return number < 10 ? "0" + number : String.valueOf(number);
-            }
-
         }.start();
 
         isPaused = false;
@@ -207,12 +188,24 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     private void ResetTimer() {
         Log.d("TimerActivity", "Resetting Timer");
 
-        txtCountdownTimer.setText(time);
+        txtCountdownTimer.setText(TIME);
         SetNextPlayer();
 
         isCancelled = true;
     }
 
+    private void UpdateTimer(long millisUntilFinished) {
+        int secondsRemaining = (int)(millisUntilFinished / INTERVAL);
+        String timeRemaining = secondsRemaining / 60 + ":" + checkDigit(secondsRemaining % 60);
+        txtCountdownTimer.setText(timeRemaining);
+        pgbCountdownBar.setProgress((secondsRemaining * 100)/INITIAL_TIME_S);
+
+        if(secondsRemaining <= 10) pgbCountdownBar.getProgressDrawable().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.MULTIPLY);
+    }
+
+    private String checkDigit(long number) {
+        return number < 10 ? "0" + number : String.valueOf(number);
+    }
 
     private void SetNextPlayer() {
 
