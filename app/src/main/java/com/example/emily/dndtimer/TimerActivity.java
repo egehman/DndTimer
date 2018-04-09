@@ -29,16 +29,21 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     private TextView txtPlayerName;
     //private TextView txtNextPlayer;
     private ListView lstPlayerList;
+    private ListView lstGraveyard;
     private TextView txtCountdownTimer;
     private Button btnStart;
     private Button btnPause;
     private Button btnResume;
     private Button btnSkip;
+    private Button btnDied;
     private ProgressBar pgbCountdownBar;
 
     private ArrayList<String> playerList;
+    private ArrayList<String> graveyardList;
     private String currentPlayer;
-    private ArrayAdapter<String> listAdapter;
+    private boolean playerDied;
+    private ArrayAdapter<String> playerListAdapter;
+    private ArrayAdapter<String> graveyardListAdapter;
     //Timer Variables
     private boolean isPaused;
     private boolean isCancelled;
@@ -56,9 +61,11 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         btnPause = findViewById(R.id.btnPause);
         btnResume = findViewById(R.id.btnResume);
         btnSkip = findViewById(R.id.btnSkip);
+        btnDied = findViewById(R.id.btnDead);
         pgbCountdownBar = findViewById(R.id.pgbCountdownBar);
 
         playerList = new ArrayList<>();
+        graveyardList = new ArrayList<>();
         //Add Players for testing
         playerList.add("Chuck Norris");
         playerList.add("Bruce Wayne");
@@ -66,8 +73,11 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         playerList.add("Charles Xavier");
         //playerList.addAll(getIntent().getStringArrayListExtra("PlayerList"));
         //txtNextPlayer.setText(playerList.get(1));
-        listAdapter = new ArrayAdapter<>(this, R.layout.timer_list_text, playerList);
-        lstPlayerList.setAdapter(listAdapter);
+        playerListAdapter = new ArrayAdapter<>(this, R.layout.timer_list_text, playerList);
+        lstPlayerList.setAdapter(playerListAdapter);
+
+        graveyardListAdapter = new ArrayAdapter<>(this, R.layout.timer_list_text, graveyardList);
+        lstPlayerList.setAdapter(graveyardListAdapter);
 
         SetNextPlayer();
 
@@ -78,11 +88,13 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
         isPaused = true;
         isCancelled = false;
+        playerDied = false;
 
         btnStart.setOnClickListener(this);
         btnPause.setOnClickListener(this);
         btnResume.setOnClickListener(this);
         btnSkip.setOnClickListener(this);
+        btnDied.setOnClickListener(this);
 
     }
 
@@ -118,7 +130,10 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
                 ResetTimer();
                 break;
-
+            case R.id.btnDead:
+                playerDied = true;
+                SetNextPlayer();
+                break;
             default:
                 Log.d("TimerActivity", "Onclick fell into default case");
         }
@@ -130,7 +145,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
         isPaused = false;
         isCancelled = false;
 
-        CountDownTimer timer = new CountDownTimer(INITIAL_TIME, INTERVAL) {
+        new CountDownTimer(INITIAL_TIME, INTERVAL) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (isPaused || isCancelled) {
@@ -164,7 +179,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
         long initialTime = timeRemaining;
 
-        CountDownTimer timer = new CountDownTimer(initialTime, INTERVAL) {
+        new CountDownTimer(initialTime, INTERVAL) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if (isPaused || isCancelled) {
@@ -195,6 +210,7 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
     }
 
     private void UpdateTimer(long millisUntilFinished) {
+
         int secondsRemaining = (int)(millisUntilFinished / INTERVAL);
         String timeRemaining = secondsRemaining / 60 + ":" + checkDigit(secondsRemaining % 60);
         txtCountdownTimer.setText(timeRemaining);
@@ -209,11 +225,18 @@ public class TimerActivity extends AppCompatActivity implements View.OnClickList
 
     private void SetNextPlayer() {
 
-        if(currentPlayer != null && !currentPlayer.equals("")) playerList.add(currentPlayer);
+        if(currentPlayer != null && !currentPlayer.equals("") && !playerDied) playerList.add(currentPlayer);
+
+        if(playerDied) {
+            graveyardList.add(currentPlayer);
+            playerDied = false;
+        }
+
         currentPlayer = playerList.get(0);
         txtPlayerName.setText(currentPlayer);
         playerList.remove(currentPlayer);
-        listAdapter.notifyDataSetChanged();
+        playerListAdapter.notifyDataSetChanged();
+        graveyardListAdapter.notifyDataSetChanged();
 
     }
 }

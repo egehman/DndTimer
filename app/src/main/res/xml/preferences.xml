@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <PreferenceCategory
+        android:title="Timer Settings"
+        android:key="timer_settings">
+
+        <ListPreference
+            android:key="timer_time"
+            android:title="Countdown Time"
+            android:summary="A player has %s to act"
+            android:defaultValue="60000"
+            android:entries="@array/timerInterval"
+            android:entryValues="@array/timerIntervalValues"
+            />
+
+        <ListPreference
+            android:key="timer_style"
+            android:title="Timer Styles"
+            android:summary="%s"
+            android:defaultValue="0"
+            android:entries="@array/timerStyles"
+            android:entryValues="@array/timerStylesValues"
+            />
+
+    </PreferenceCategory>
+
+    <PreferenceCategory
+        android:title="Player Settings"
+        android:key="player_settings">
+
+        <ListPreference
+            android:key="upcoming_players"
+            android:title="Upcoming Players"
+            android:summary="%s will be shown"
+            android:defaultValue="0"
+            android:entries="@array/upcomingPlayers"
+            android:entryValues="@array/upcomingPlayersValues"
+            />
+
+        <ListPreference
+            android:key="graveyard_players"
+            android:title="Graveyard"
+            android:summary="%s will appear in the graveyard"
+            android:defaultValue="0"
+            android:entries="@array/graveyardPlayers"
+            android:entryValues="@array/graveyardPlayersValues"
+            />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
