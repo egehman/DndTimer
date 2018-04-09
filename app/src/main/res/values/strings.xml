@@ -10,7 +10,7 @@
     <string name="btn_start_timer">Start</string>
     <string name="btn_pause_timer">Pause</string>
     <string name="btn_resume_timer">Resume</string>
-    <string name="btn_next_player">Next</string>
+    <string name="btn_next_player">Next Player</string>
     <string name="btn_player_died">Player Died</string>
     <string name="text_player_list">Player List: </string>
     <string name="text_graveyard_list">Graveyard: </string>
