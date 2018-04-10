@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import static java.lang.Math.min;
+
 public class TimerActivity extends AppCompatActivity {
 
     //region Constants
@@ -42,16 +44,20 @@ public class TimerActivity extends AppCompatActivity {
     private Button btnDied;
     private ProgressBar pgbCountdownBar;
 
-    private ArrayList<String> playerList;
-    private ArrayList<String> graveyardList;
-    private String currentPlayer;
-    private boolean playerDied = false;
-    private ArrayAdapter<String> playerListAdapter;
-    private ArrayAdapter<String> graveyardListAdapter;
+    private ArrayList<Player> playerList;
+    private ArrayList<Player> graveyardList;
+    private ArrayList<Player> filteredPlayerList;
+    private ArrayList<Player> filteredGraveyardList;
+    private Player currentPlayer;
+    private PlayerTimerArrayAdapter playerListAdapter;
+    private PlayerTimerArrayAdapter graveyardListAdapter;
     //Timer Variables
     private boolean isPaused = true;
     private boolean isCancelled = false;
     private long timeRemaining;
+
+    private int playerListSetting;
+    private int graveyardListSetting;
 //endregion
 
     @Override
@@ -75,11 +81,12 @@ public class TimerActivity extends AppCompatActivity {
         initialTimeSeconds = (int) (initialTime / INTERVAL);
         UpdateTimer(initialTime);
 
-        int upcomingPlayer = prefs.getInt("upcoming_players", 0);
-        int graveyardPlayer = prefs.getInt("graveyard_players", 0);
+        playerListSetting = prefs.getInt("upcoming_players", 0);
+        graveyardListSetting = prefs.getInt("graveyard_players", 0);
 
         setTimerStyle(timerStyle);
-        setPlayerSettings(upcomingPlayer, graveyardPlayer);
+        setFilteredGraveyardList();
+        setFilteredPlayerList();
 
         super.onResume();
     }
@@ -93,7 +100,7 @@ public class TimerActivity extends AppCompatActivity {
     //region Listeners
     private View.OnClickListener btnPlayerDeathListener = new View.OnClickListener() {
         public void onClick(View view) {
-            playerDied = true;
+            currentPlayer.setAlive(false);
             SetNextPlayer();
         }
     };
@@ -256,48 +263,72 @@ public class TimerActivity extends AppCompatActivity {
         }
     }
 
-    private void setPlayerSettings(int upcomingPlayers, int graveyardPlayers) {
-        switch (upcomingPlayers) {
-            case 0: //We want to see all players
+    //There may be a better/cleaner way to do this
+    private void setFilteredPlayerList() {
 
+        switch (playerListSetting) {
+            case 0: //We want to see all players
+                filteredPlayerList.clear();
+                if (playerList != null && !playerList.isEmpty())
+                    filteredPlayerList.addAll(playerList);
                 break;
 
             case 1: //We only want next player
-
+                filteredPlayerList.clear();
+                if (playerList != null && !playerList.isEmpty())
+                    filteredPlayerList.add(playerList.get(0));
                 break;
 
             case 2: //we only want next 2 players
-
+                filteredPlayerList.clear();
+                if (playerList != null && !playerList.isEmpty())
+                    filteredPlayerList.addAll(playerList.subList(0, min(playerList.size(), 2)));
                 break;
 
             case 5: //we only want next 5 players
-
+                filteredPlayerList.clear();
+                if (playerList != null && !playerList.isEmpty())
+                    filteredPlayerList.addAll(playerList.subList(0, min(playerList.size(), 5)));
                 break;
 
             default:
                 Log.d("TimerActivity", "Unknown number of upcoming players");
         }
 
-        switch (graveyardPlayers) {
-            case 0: //We want to see all players
+        playerListAdapter.notifyDataSetChanged();
+    }
 
+    private void setFilteredGraveyardList() {
+        switch (graveyardListSetting) {
+            case 0: //We want to see all players
+                filteredGraveyardList.clear();
+                if (graveyardList != null && !graveyardList.isEmpty())
+                    filteredGraveyardList.addAll(graveyardList);
                 break;
 
             case 1: //We only want 1 player
-
+                filteredGraveyardList.clear();
+                if (graveyardList != null && !graveyardList.isEmpty())
+                    filteredGraveyardList.add(graveyardList.get(0));
                 break;
 
             case 2: //we only want 2 players
-
+                filteredGraveyardList.clear();
+                if (graveyardList != null && !graveyardList.isEmpty())
+                    filteredGraveyardList.addAll(graveyardList.subList(0, min(graveyardList.size(), 2)));
                 break;
 
             case 5: //we only want 5 players
-
+                filteredGraveyardList.clear();
+                if (graveyardList != null && !graveyardList.isEmpty())
+                    filteredGraveyardList.addAll(graveyardList.subList(0, min(graveyardList.size(), 5)));
                 break;
 
             default:
                 Log.d("TimerActivity", "Unknown number of upcoming players");
         }
+
+        graveyardListAdapter.notifyDataSetChanged();
     }
     //endregion
 
@@ -337,36 +368,38 @@ public class TimerActivity extends AppCompatActivity {
         //txtNextPlayer.setText(playerList.get(1));
 
         //set adapters
-        playerListAdapter = new ArrayAdapter<>(this, R.layout.timer_list_text, playerList);
+        playerListAdapter = new PlayerTimerArrayAdapter(this, R.layout.timer_list_text, filteredPlayerList);
         lstPlayerList.setAdapter(playerListAdapter);
 
-        graveyardListAdapter = new ArrayAdapter<>(this, R.layout.timer_list_text, graveyardList);
-        lstPlayerList.setAdapter(graveyardListAdapter);
+        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.timer_list_text, filteredGraveyardList);
+        lstGraveyard.setAdapter(graveyardListAdapter);
     }
     //endregion
 
     private void SetNextPlayer() {
 
-        if (currentPlayer != null && !currentPlayer.equals("") && !playerDied)
+        if (currentPlayer != null && !currentPlayer.equals("") && currentPlayer.isAlive())
             playerList.add(currentPlayer);
 
-        if (playerDied) {
+        if (!currentPlayer.isAlive()) {
             graveyardList.add(currentPlayer);
-            playerDied = false;
         }
 
         currentPlayer = playerList.get(0);
-        txtPlayerName.setText(currentPlayer);
+        txtPlayerName.setText(currentPlayer.getName());
         playerList.remove(currentPlayer);
-        playerListAdapter.notifyDataSetChanged();
-        graveyardListAdapter.notifyDataSetChanged();
+
+        setFilteredPlayerList();
+        setFilteredGraveyardList();
     }
 
+
+
     private void setTestingData() {
-        playerList.add("Chuck Norris");
-        playerList.add("Bruce Wayne");
-        playerList.add("Tony Stark");
-        playerList.add("Charles Xavier");
+        playerList.add(new Player("Chuck Norris", 17));
+        playerList.add(new Player("Bruce Wayne", 13));
+        playerList.add(new Player("Tony Stark", 7));
+        playerList.add(new Player("Charles Xavier", 5));
     }
 
 }
