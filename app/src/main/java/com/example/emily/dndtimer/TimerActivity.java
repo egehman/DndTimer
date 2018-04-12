@@ -8,12 +8,10 @@ import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -85,8 +83,8 @@ public class TimerActivity extends AppCompatActivity {
         graveyardListSetting = prefs.getInt("graveyard_players", 0);
 
         setTimerStyle(timerStyle);
-        setFilteredGraveyardList();
-        setFilteredPlayerList();
+//        setFilteredGraveyardList();
+//        setFilteredPlayerList();
 
         super.onResume();
     }
@@ -362,17 +360,17 @@ public class TimerActivity extends AppCompatActivity {
         playerList = new ArrayList<>();
         graveyardList = new ArrayList<>();
 
-        setTestingData();
+        playerList = getIntent().getParcelableArrayListExtra(Constants.KEY_PLAYERS);
 
         //playerList.addAll(getIntent().getStringArrayListExtra("PlayerList"));
         //txtNextPlayer.setText(playerList.get(1));
 
         //set adapters
-        playerListAdapter = new PlayerTimerArrayAdapter(this, R.layout.timer_list_text, filteredPlayerList);
+        playerListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, playerList);
         lstPlayerList.setAdapter(playerListAdapter);
 
-        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.timer_list_text, filteredGraveyardList);
-        lstGraveyard.setAdapter(graveyardListAdapter);
+//        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, graveyardList);
+//        lstGraveyard.setAdapter(graveyardListAdapter);
     }
     //endregion
 
@@ -381,7 +379,7 @@ public class TimerActivity extends AppCompatActivity {
         if (currentPlayer != null && !currentPlayer.equals("") && currentPlayer.isAlive())
             playerList.add(currentPlayer);
 
-        if (!currentPlayer.isAlive()) {
+        if (currentPlayer != null && !currentPlayer.isAlive()) {
             graveyardList.add(currentPlayer);
         }
 
@@ -389,17 +387,7 @@ public class TimerActivity extends AppCompatActivity {
         txtPlayerName.setText(currentPlayer.getName());
         playerList.remove(currentPlayer);
 
-        setFilteredPlayerList();
-        setFilteredGraveyardList();
+//        setFilteredPlayerList();
+//        setFilteredGraveyardList();
     }
-
-
-
-    private void setTestingData() {
-        playerList.add(new Player("Chuck Norris", 17));
-        playerList.add(new Player("Bruce Wayne", 13));
-        playerList.add(new Player("Tony Stark", 7));
-        playerList.add(new Player("Charles Xavier", 5));
-    }
-
 }

@@ -15,4 +15,7 @@
     <string name="text_player_list">Player List: </string>
     <string name="text_graveyard_list">Graveyard: </string>
     <string name="text_initial_time">1:00</string>
+    <!--Options Strings-->
+    <string name="btn_start_new">Start New Game</string>
+    <string name="btn_resume_saved">Resume Saved Game</string>
 </resources>
