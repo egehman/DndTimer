@@ -19,6 +19,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import static java.lang.Math.min;
 
@@ -409,6 +410,7 @@ public class TimerActivity extends AppCompatActivity {
         filteredPlayerList = new ArrayList<>();
         filteredGraveyardList = new ArrayList<>();
         playerList = getIntent().getParcelableArrayListExtra(Constants.KEY_PLAYERS);
+        Collections.sort(playerList);
 
         //set adapters
         playerListAdapter = new PlayerListArrayAdapter(this, R.layout.item_row_timer, filteredPlayerList);

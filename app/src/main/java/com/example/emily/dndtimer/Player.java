@@ -2,8 +2,9 @@ package com.example.emily.dndtimer;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.support.annotation.NonNull;
 
-public class Player implements Parcelable {
+public class Player implements Parcelable, Comparable<Player> {
 
     private String name;
     private int initiative;
@@ -73,5 +74,12 @@ public class Player implements Parcelable {
 
     public void setAlive(boolean alive) {
         isAlive = alive;
+    }
+
+    //This compareTo is designed to sort a list of players in descending order by initiative ie 20, 19, 18...
+    @Override
+    public int compareTo(@NonNull Player o) {
+        return this.initiative > o.initiative ? -1 :
+                this.initiative < o.initiative ? 1 : 0;
     }
 }
