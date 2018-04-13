@@ -150,7 +150,6 @@ public class TimerActivity extends AppCompatActivity {
         public void onClick(View view) {
             btnResume.setVisibility(View.VISIBLE);
             btnPause.setVisibility(View.INVISIBLE);
-
             PauseTimer();
         }
     };
@@ -171,6 +170,7 @@ public class TimerActivity extends AppCompatActivity {
             btnStart.setVisibility(View.VISIBLE);
 
             ResetTimer();
+            SetNextPlayer();
         }
     };
 
@@ -242,7 +242,6 @@ public class TimerActivity extends AppCompatActivity {
         Log.d("TimerActivity", "Resetting Timer");
 
         UpdateTimer(initialTime);
-//        SetNextPlayer();
 
         isCancelled = true;
     }
