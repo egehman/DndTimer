@@ -18,4 +18,6 @@
     <!--Options Strings-->
     <string name="btn_start_new">Start New Game</string>
     <string name="btn_resume_saved">Resume Saved Game</string>
+    <!--Actionbar Strings-->
+    <string name="btn_settings">Settings</string>
 </resources>

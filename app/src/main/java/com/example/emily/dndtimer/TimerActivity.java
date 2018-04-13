@@ -2,16 +2,19 @@ package com.example.emily.dndtimer;
 
 import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.graphics.ColorFilter;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -21,6 +24,7 @@ public class TimerActivity extends AppCompatActivity {
 
     //region Constants
     static final String TIME = "1:00";
+    static final String TIME_UP = "0:00";
     static final long INITIAL_TIME = 60000; // 1 Minute
     static final long INTERVAL = 1000; //1 Second
     //endregion
@@ -28,7 +32,6 @@ public class TimerActivity extends AppCompatActivity {
     //region Global Variables
     //preference settings
     private long initialTime;
-    private int initialTimeSeconds;
 
     private TextView txtPlayerName;
     //private TextView txtNextPlayer;
@@ -63,6 +66,9 @@ public class TimerActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_timer);
 
+        Toolbar myToolbar = findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+
         initializeViews();
         initializeLists();
 
@@ -76,15 +82,14 @@ public class TimerActivity extends AppCompatActivity {
 
         int timerStyle = prefs.getInt("timer_style", 0);
         initialTime = prefs.getLong("timer_time", INITIAL_TIME);
-        initialTimeSeconds = (int) (initialTime / INTERVAL);
         UpdateTimer(initialTime);
 
         playerListSetting = prefs.getInt("upcoming_players", 0);
         graveyardListSetting = prefs.getInt("graveyard_players", 0);
 
         setTimerStyle(timerStyle);
-//        setFilteredGraveyardList();
-//        setFilteredPlayerList();
+        setFilteredGraveyardList();
+        setFilteredPlayerList();
 
         super.onResume();
     }
@@ -99,6 +104,7 @@ public class TimerActivity extends AppCompatActivity {
     private View.OnClickListener btnPlayerDeathListener = new View.OnClickListener() {
         public void onClick(View view) {
             currentPlayer.setAlive(false);
+            ResetTimer();
             SetNextPlayer();
         }
     };
@@ -223,13 +229,24 @@ public class TimerActivity extends AppCompatActivity {
 
             if (secondsRemaining <= 10)
                 txtCountdownTimer.setTextColor(Color.RED);
+            else
+                txtCountdownTimer.setTextColor(Color.GRAY);
         }
 
         if (pgbCountdownBar.getVisibility() == View.VISIBLE) {
-            pgbCountdownBar.setProgress((secondsRemaining * 100) / initialTimeSeconds);
+            float fraction = millisUntilFinished / (float) initialTime;
+            int countdownValue = (int) (fraction * 100);
+            Log.d("CountdownTimer", "Remaining Time: " + countdownValue);
+            pgbCountdownBar.setProgress(0); //do this for some reason
+            pgbCountdownBar.setMax(0); //do this for some reason
+            pgbCountdownBar.setMax(100); //do this for some reason
+            pgbCountdownBar.animate();
+            pgbCountdownBar.setProgress(countdownValue);
 
             if (secondsRemaining <= 10)
                 pgbCountdownBar.getProgressDrawable().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.MULTIPLY);
+//            else
+                //pgbCountdownBar.getProgressDrawable().setColorFilter(Color.BLUE, android.graphics.PorterDuff.Mode.MULTIPLY);
         }
     }
 
@@ -334,6 +351,7 @@ public class TimerActivity extends AppCompatActivity {
     private void initializeViews() {
         txtPlayerName = findViewById(R.id.txtPlayerName);
         lstPlayerList = findViewById(R.id.lstNextPlayer);
+        lstGraveyard = findViewById(R.id.lstGraveyard);
         txtCountdownTimer = findViewById(R.id.txtCountdownTimer);
         btnStart = findViewById(R.id.btnStart);
         btnPause = findViewById(R.id.btnPause);
@@ -341,6 +359,8 @@ public class TimerActivity extends AppCompatActivity {
         btnSkip = findViewById(R.id.btnSkip);
         btnDied = findViewById(R.id.btnDead);
         pgbCountdownBar = findViewById(R.id.pgbCountdownBar);
+        pgbCountdownBar.setProgress(100);
+        //pgbCountdownBar.getProgressDrawable().setColorFilter(Color.BLUE, android.graphics.PorterDuff.Mode.MULTIPLY);
 
         //set initial visibilities
         btnStart.setVisibility(View.VISIBLE);
@@ -359,35 +379,52 @@ public class TimerActivity extends AppCompatActivity {
     private void initializeLists() {
         playerList = new ArrayList<>();
         graveyardList = new ArrayList<>();
-
+        filteredPlayerList = new ArrayList<>();
+        filteredGraveyardList = new ArrayList<>();
         playerList = getIntent().getParcelableArrayListExtra(Constants.KEY_PLAYERS);
-
-        //playerList.addAll(getIntent().getStringArrayListExtra("PlayerList"));
-        //txtNextPlayer.setText(playerList.get(1));
 
         //set adapters
         playerListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, playerList);
         lstPlayerList.setAdapter(playerListAdapter);
 
-//        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, graveyardList);
-//        lstGraveyard.setAdapter(graveyardListAdapter);
+        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, graveyardList);
+        lstGraveyard.setAdapter(graveyardListAdapter);
     }
     //endregion
 
     private void SetNextPlayer() {
 
-        if (currentPlayer != null && !currentPlayer.equals("") && currentPlayer.isAlive())
+        if (currentPlayer != null && currentPlayer.isAlive())
             playerList.add(currentPlayer);
 
         if (currentPlayer != null && !currentPlayer.isAlive()) {
             graveyardList.add(currentPlayer);
         }
 
-        currentPlayer = playerList.get(0);
-        txtPlayerName.setText(currentPlayer.getName());
-        playerList.remove(currentPlayer);
+        if (!playerList.isEmpty()) {
+            currentPlayer = playerList.get(0);
+            txtPlayerName.setText(currentPlayer.getName());
+            playerList.remove(currentPlayer);
+        } else {
+            //Game Over
+            GameOver();
+        }
 
-//        setFilteredPlayerList();
-//        setFilteredGraveyardList();
+        setFilteredPlayerList();
+        setFilteredGraveyardList();
+    }
+
+    private void GameOver() {
+        Toast.makeText(getBaseContext(), "Everyone Died, Game Over", Toast.LENGTH_LONG).show();
+        //hide all buttons
+        btnStart.setVisibility(View.INVISIBLE);
+        btnPause.setVisibility(View.INVISIBLE);
+        btnResume.setVisibility(View.INVISIBLE);
+        btnDied.setVisibility(View.INVISIBLE);
+        btnSkip.setVisibility(View.INVISIBLE);
+        txtCountdownTimer.setText(TIME_UP);
+        txtCountdownTimer.setTextColor(Color.RED);
+        pgbCountdownBar.setProgress(0);
+        pgbCountdownBar.setProgress(0);
     }
 }

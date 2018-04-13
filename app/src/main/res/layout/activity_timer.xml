@@ -2,39 +2,46 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    >
-
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    <!--android:elevation="4dp"-->
     <TextView
         android:id="@+id/txtPlayerName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="32sp"
-        android:text="@string/text_player_name"
         android:shadowDx="1.5"
         android:shadowDy="1.3"
-        android:shadowRadius="1.6"/>
+        android:shadowRadius="1.6"
+        android:text="@string/text_player_name"
+        android:textSize="32sp" />
 
     <TextView
         android:id="@+id/txtCountdownTimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:textSize="40sp"
-        android:textStyle="bold"
         android:shadowDx="1.5"
         android:shadowDy="1.3"
+        android:shadowRadius="1.6"
         android:text="@string/text_initial_time"
-        android:shadowRadius="1.6"/>
+        android:textSize="40sp"
+        android:textStyle="bold" />
 
     <ProgressBar
         android:id="@+id/pgbCountdownBar"
         style="@android:style/Widget.ProgressBar.Horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:progress="100"
-        android:progressDrawable="@color/colorPrimaryDark" />
+        android:layout_marginRight="5dp"
+        android:layout_marginLeft="5dp"/>
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -46,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/btn_start_timer"/>
+            android:text="@string/btn_start_timer" />
 
         <Button
             android:id="@+id/btnPause"
@@ -54,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/btn_pause_timer"/>
+            android:text="@string/btn_pause_timer" />
 
         <Button
             android:id="@+id/btnResume"
@@ -62,24 +69,27 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/btn_resume_timer"/>
+            android:text="@string/btn_resume_timer" />
 
         <Button
             android:id="@+id/btnDead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/btnResume"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
             android:layout_toLeftOf="@+id/btnSkip"
-            android:text="@string/btn_player_died"
-            />
+            android:layout_toStartOf="@id/btnSkip"
+            android:layout_toRightOf="@+id/btnResume"
+            android:layout_toEndOf="@id/btnResume"
+            android:text="@string/btn_player_died" />
 
         <Button
             android:id="@+id/btnSkip"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
             android:layout_alignParentEnd="true"
-            android:text="@string/btn_next_player"/>
+            android:layout_alignParentRight="true"
+            android:text="@string/btn_next_player" />
 
     </RelativeLayout>
 
@@ -92,23 +102,23 @@
             android:id="@+id/txtNextPlayerLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:padding="10dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/text_player_list"
+            android:padding="10dp"
             android:shadowDx="1.5"
             android:shadowDy="1.3"
-            android:shadowRadius="1.6"/>
+            android:shadowRadius="1.6"
+            android:text="@string/text_player_list"
+            android:textSize="30sp" />
 
         <ListView
             android:id="@+id/lstNextPlayer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="?attr/actionBarSize"
-            android:padding="10dp"
-            android:layout_toRightOf= "@+id/txtNextPlayerLabel"
-            android:layout_toEndOf= "@+id/txtNextPlayerLabel" />
+            android:layout_toEndOf="@+id/txtNextPlayerLabel"
+            android:layout_toRightOf="@+id/txtNextPlayerLabel"
+            android:padding="10dp" />
 
     </RelativeLayout>
 
@@ -121,23 +131,23 @@
             android:id="@+id/txtGraveyardLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="30sp"
-            android:padding="10dp"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:text="@string/text_graveyard_list"
+            android:padding="10dp"
             android:shadowDx="1.5"
             android:shadowDy="1.3"
-            android:shadowRadius="1.6"/>
+            android:shadowRadius="1.6"
+            android:text="@string/text_graveyard_list"
+            android:textSize="30sp" />
 
         <ListView
             android:id="@+id/lstGraveyard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="?attr/actionBarSize"
-            android:padding="10dp"
-            android:layout_toRightOf= "@+id/txtGraveyardLabel"
-            android:layout_toEndOf= "@+id/txtGraveyardLabel" />
+            android:layout_toEndOf="@+id/txtGraveyardLabel"
+            android:layout_toRightOf="@+id/txtGraveyardLabel"
+            android:padding="10dp" />
 
     </RelativeLayout>
 
