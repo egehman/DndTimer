@@ -121,8 +121,7 @@ public class TimerActivity extends AppCompatActivity {
         return (super.onOptionsItemSelected(item));
     }
 
-    private void GoToSettings()
-    {
+    private void GoToSettings() {
         Intent i = new Intent(this, DnDPreferenceActivity.class);
         startActivity(i);
     }
@@ -142,7 +141,10 @@ public class TimerActivity extends AppCompatActivity {
         public void onClick(View view) {
             btnPause.setVisibility(View.VISIBLE);
             btnStart.setVisibility(View.INVISIBLE);
-
+            btnPause.setEnabled(true);
+            //Set default colors for timer and countdown bar
+            txtCountdownTimer.setTextColor(Color.GRAY);
+            pgbCountdownBar.getProgressDrawable().setColorFilter(Color.YELLOW, android.graphics.PorterDuff.Mode.MULTIPLY);
             StartTimer();
         }
     };
@@ -257,24 +259,17 @@ public class TimerActivity extends AppCompatActivity {
 
             if (secondsRemaining <= 10)
                 txtCountdownTimer.setTextColor(Color.RED);
-            else
-                txtCountdownTimer.setTextColor(Color.GRAY);
         }
 
         if (pgbCountdownBar.getVisibility() == View.VISIBLE) {
             float fraction = millisUntilFinished / (float) initialTime;
             int countdownValue = (int) (fraction * 100);
             Log.d("CountdownTimer", "Remaining Time: " + countdownValue);
-            pgbCountdownBar.setProgress(0); //do this for some reason
-            pgbCountdownBar.setMax(0); //do this for some reason
-            pgbCountdownBar.setMax(100); //do this for some reason
             pgbCountdownBar.animate();
             pgbCountdownBar.setProgress(countdownValue);
 
             if (secondsRemaining <= 10)
                 pgbCountdownBar.getProgressDrawable().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.MULTIPLY);
-//            else
-            //pgbCountdownBar.getProgressDrawable().setColorFilter(Color.BLUE, android.graphics.PorterDuff.Mode.MULTIPLY);
         }
     }
 
