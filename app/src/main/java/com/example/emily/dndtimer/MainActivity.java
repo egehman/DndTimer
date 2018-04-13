@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -23,6 +24,8 @@ public class MainActivity extends AppCompatActivity {
     ArrayList<Player> playerList = new ArrayList<>();
     PlayerListArrayAdapter myAdapter;
 
+    int editPosition = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
         btnAdd.setOnClickListener(btnAddListener);
         btnStart.setOnClickListener(btnStartListener);
+        lv.setOnItemClickListener(itemClickListener);
 
         playerList = getIntent().getParcelableArrayListExtra(Constants.KEY_PLAYERS);
         myAdapter = new PlayerListArrayAdapter(this, R.layout.item_row_main, playerList);
@@ -102,4 +106,31 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     };
+
+    private AdapterView.OnItemClickListener itemClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            Player selectedPlayer = playerList.get(position);
+            editPosition = position;
+
+            Intent i = new Intent(MainActivity.this, EditPlayerActivity.class);
+            i.putExtra(Constants.KEY_NAME, selectedPlayer.getName());
+            i.putExtra(Constants.KEY_INIT, selectedPlayer.getInitiative());
+            startActivityForResult(i, Constants.EDIT_ACTIVITY);
+        }
+    };
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == Constants.EDIT_ACTIVITY && resultCode == RESULT_OK && editPosition >= 0) {
+            String name = data.getStringExtra(Constants.KEY_NAME);
+            int initiative = data.getIntExtra(Constants.KEY_INIT, 0);
+            Player p = playerList.get(editPosition);
+            p.setName(name);
+            p.setInitiative(initiative);
+            myAdapter.notifyDataSetChanged();
+        }
+    }
 }
