@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.preference.CheckBoxPreference;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -58,6 +59,7 @@ public class TimerActivity extends AppCompatActivity {
     //Timer Variables
     private boolean isPaused = true;
     private boolean isCancelled = false;
+    private boolean suddenDeath = false;
     private long timeRemaining;
 
     private int playerListSetting;
@@ -83,6 +85,7 @@ public class TimerActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
+        suddenDeath = prefs.getBoolean("sudden_death", false);
         int timerStyle = Integer.parseInt(prefs.getString("timer_style", "0"));
         initialTime = Long.parseLong(prefs.getString("timer_time", "60000"));
         UpdateTimer(initialTime);
@@ -142,9 +145,7 @@ public class TimerActivity extends AppCompatActivity {
             btnPause.setVisibility(View.VISIBLE);
             btnStart.setVisibility(View.INVISIBLE);
             btnPause.setEnabled(true);
-            //Set default colors for timer and countdown bar
-            txtCountdownTimer.setTextColor(Color.GRAY);
-            pgbCountdownBar.getProgressDrawable().setColorFilter(Color.YELLOW, android.graphics.PorterDuff.Mode.MULTIPLY);
+
             StartTimer();
         }
     };
@@ -200,6 +201,8 @@ public class TimerActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 btnPause.setEnabled(false);
+                pgbCountdownBar.setProgress(0);
+                CheckSuddenDeath();
             }
 
         }.start();
@@ -234,6 +237,8 @@ public class TimerActivity extends AppCompatActivity {
             @Override
             public void onFinish() {
                 btnPause.setEnabled(false);
+                pgbCountdownBar.setProgress(0);
+                CheckSuddenDeath();
             }
 
         }.start();
@@ -245,7 +250,7 @@ public class TimerActivity extends AppCompatActivity {
         Log.d("TimerActivity", "Resetting Timer");
 
         UpdateTimer(initialTime);
-
+        btnPause.setEnabled(true);
         isCancelled = true;
     }
 
@@ -277,6 +282,17 @@ public class TimerActivity extends AppCompatActivity {
         return number < 10 ? "0" + number : String.valueOf(number);
     }
 //endregion
+
+    private void CheckSuddenDeath() {
+        if(suddenDeath) {
+            currentPlayer.setAlive(false);
+            btnPause.setVisibility(View.INVISIBLE);
+            btnResume.setVisibility(View.INVISIBLE);
+            btnStart.setVisibility(View.VISIBLE);
+            ResetTimer();
+            SetNextPlayer();
+        }
+    }
 
     //region setting/style methods
     private void setTimerStyle(int timerStyle) {
@@ -417,6 +433,10 @@ public class TimerActivity extends AppCompatActivity {
     //endregion
 
     private void SetNextPlayer() {
+
+        //Set default colors for timer and countdown bar
+        txtCountdownTimer.setTextColor(Color.GRAY);
+        pgbCountdownBar.getProgressDrawable().setColorFilter(Color.YELLOW, android.graphics.PorterDuff.Mode.MULTIPLY);
 
         if (currentPlayer != null && currentPlayer.isAlive())
             playerList.add(currentPlayer);

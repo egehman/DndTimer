@@ -49,4 +49,17 @@
 
     </PreferenceCategory>
 
+    <PreferenceCategory
+        android:title="Game Settings"
+        android:key="game_settings">
+
+        <CheckBoxPreference
+            android:key="sudden_death"
+            android:title="Sudden Death Mode"
+            android:summaryOff="Sudden Death Mode is Off"
+            android:summaryOn="Sudden Death Mode is On"
+            />
+
+    </PreferenceCategory>
+
 </PreferenceScreen>
