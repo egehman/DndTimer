@@ -1,14 +1,16 @@
 package com.example.emily.dndtimer;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.ColorFilter;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
@@ -80,12 +82,12 @@ public class TimerActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
-        int timerStyle = prefs.getInt("timer_style", 0);
-        initialTime = prefs.getLong("timer_time", INITIAL_TIME);
+        int timerStyle = Integer.parseInt(prefs.getString("timer_style", "0"));
+        initialTime = Long.parseLong(prefs.getString("timer_time", "60000"));
         UpdateTimer(initialTime);
 
-        playerListSetting = prefs.getInt("upcoming_players", 0);
-        graveyardListSetting = prefs.getInt("graveyard_players", 0);
+        playerListSetting = Integer.parseInt(prefs.getString("upcoming_players", "0"));
+        graveyardListSetting = Integer.parseInt(prefs.getString("graveyard_players", "0"));
 
         setTimerStyle(timerStyle);
         setFilteredGraveyardList();
@@ -99,6 +101,32 @@ public class TimerActivity extends AppCompatActivity {
         PauseTimer();
         super.onPause();
     }
+
+    //region Action Bar
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.toolbar, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                GoToSettings();
+                return (true);
+
+        }
+        return (super.onOptionsItemSelected(item));
+    }
+
+    private void GoToSettings()
+    {
+        Intent i = new Intent(this, DnDPreferenceActivity.class);
+        startActivity(i);
+    }
+
+    //endregion
 
     //region Listeners
     private View.OnClickListener btnPlayerDeathListener = new View.OnClickListener() {
@@ -214,7 +242,7 @@ public class TimerActivity extends AppCompatActivity {
         Log.d("TimerActivity", "Resetting Timer");
 
         UpdateTimer(initialTime);
-        SetNextPlayer();
+//        SetNextPlayer();
 
         isCancelled = true;
     }
@@ -246,7 +274,7 @@ public class TimerActivity extends AppCompatActivity {
             if (secondsRemaining <= 10)
                 pgbCountdownBar.getProgressDrawable().setColorFilter(Color.RED, android.graphics.PorterDuff.Mode.MULTIPLY);
 //            else
-                //pgbCountdownBar.getProgressDrawable().setColorFilter(Color.BLUE, android.graphics.PorterDuff.Mode.MULTIPLY);
+            //pgbCountdownBar.getProgressDrawable().setColorFilter(Color.BLUE, android.graphics.PorterDuff.Mode.MULTIPLY);
         }
     }
 
@@ -384,10 +412,10 @@ public class TimerActivity extends AppCompatActivity {
         playerList = getIntent().getParcelableArrayListExtra(Constants.KEY_PLAYERS);
 
         //set adapters
-        playerListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, playerList);
+        playerListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, filteredPlayerList);
         lstPlayerList.setAdapter(playerListAdapter);
 
-        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, graveyardList);
+        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, filteredGraveyardList);
         lstGraveyard.setAdapter(graveyardListAdapter);
     }
     //endregion
@@ -426,5 +454,6 @@ public class TimerActivity extends AppCompatActivity {
         txtCountdownTimer.setTextColor(Color.RED);
         pgbCountdownBar.setProgress(0);
         pgbCountdownBar.setProgress(0);
+        finish();
     }
 }

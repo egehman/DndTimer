@@ -7,23 +7,23 @@
         <item name="120000">2 minutes</item>
         <item name="300000">5 minutes</item>
     </string-array>
-    <integer-array name="timerIntervalValues">
+    <string-array name="timerIntervalValues">
         <item name="30000">30000</item>
         <item name="60000">60000</item>
         <item name="120000">120000</item>
         <item name="300000">300000</item>
-    </integer-array>
+    </string-array>
 
     <string-array name="timerStyles">
         <item name="0">Countdown Clock and Progress Bar</item>
         <item name="1">Countdown Clock Only</item>
         <item name="2">Progress Bar Only</item>
     </string-array>
-    <integer-array name="timerStylesValues">
+    <string-array name="timerStylesValues">
         <item name="0">0</item>
         <item name="1">1</item>
         <item name="2">2</item>
-    </integer-array>
+    </string-array>
 
     <string-array name="upcomingPlayers">
         <item name="0">All upcoming players</item>
@@ -31,12 +31,12 @@
         <item name="2">Next 2 upcoming players</item>
         <item name="5">Next 5 upcoming players</item>
     </string-array>
-    <integer-array name="upcomingPlayersValues">
+    <string-array name="upcomingPlayersValues">
         <item name="0">0</item>
         <item name="1">1</item>
         <item name="2">2</item>
         <item name="5">5</item>
-    </integer-array>
+    </string-array>
 
     <string-array name="graveyardPlayers">
         <item name="0">All dead players</item>
@@ -44,11 +44,11 @@
         <item name="2">2 players</item>
         <item name="5">5 players</item>
     </string-array>
-    <integer-array name="graveyardPlayersValues">
+    <string-array name="graveyardPlayersValues">
         <item name="0">0</item>
         <item name="1">1</item>
         <item name="2">2</item>
         <item name="5">5</item>
-    </integer-array>
+    </string-array>
 
 </resources>

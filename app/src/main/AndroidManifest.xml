@@ -19,7 +19,7 @@
         <activity android:name=".MainActivity"/>
         <activity android:name=".TimerActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".PreferenceActivity"/>
+        <activity android:name=".DnDPreferenceActivity"/>
     </application>
 
 </manifest>
