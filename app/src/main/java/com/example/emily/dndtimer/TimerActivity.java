@@ -52,8 +52,8 @@ public class TimerActivity extends AppCompatActivity {
     private ArrayList<Player> filteredPlayerList;
     private ArrayList<Player> filteredGraveyardList;
     private Player currentPlayer;
-    private PlayerTimerArrayAdapter playerListAdapter;
-    private PlayerTimerArrayAdapter graveyardListAdapter;
+    private PlayerListArrayAdapter playerListAdapter;
+    private PlayerListArrayAdapter graveyardListAdapter;
     //Timer Variables
     private boolean isPaused = true;
     private boolean isCancelled = false;
@@ -412,10 +412,10 @@ public class TimerActivity extends AppCompatActivity {
         playerList = getIntent().getParcelableArrayListExtra(Constants.KEY_PLAYERS);
 
         //set adapters
-        playerListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, filteredPlayerList);
+        playerListAdapter = new PlayerListArrayAdapter(this, R.layout.item_row_timer, filteredPlayerList);
         lstPlayerList.setAdapter(playerListAdapter);
 
-        graveyardListAdapter = new PlayerTimerArrayAdapter(this, R.layout.item_row_timer, filteredGraveyardList);
+        graveyardListAdapter = new PlayerListArrayAdapter(this, R.layout.item_row_timer, filteredGraveyardList);
         lstGraveyard.setAdapter(graveyardListAdapter);
     }
     //endregion

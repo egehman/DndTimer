@@ -7,6 +7,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 public class OptionsActivity extends AppCompatActivity implements View.OnClickListener {
@@ -45,13 +49,47 @@ public class OptionsActivity extends AppCompatActivity implements View.OnClickLi
         startActivity(i);
     }
 
-    // todo get list of players from saved data
-    private ArrayList<Player> getPlayerList() {
+    private ArrayList<Player> getTestPlayerList() {
         ArrayList<Player> players = new ArrayList<>();
         players.add(new Player("Chuck Norris", 17));
         players.add(new Player("Bruce Wayne", 13));
         players.add(new Player("Tony Stark", 7));
         players.add(new Player("Charles Xavier", 5));
+        return players;
+    }
+
+    private ArrayList<Player> getPlayerList() {
+
+        ArrayList<Player> players = new ArrayList<>();
+        FileInputStream inputStream;
+        BufferedReader reader = null;
+        String line;
+
+        try {
+            inputStream = openFileInput(Constants.FILE_PLAYERS);
+            reader = new BufferedReader(new InputStreamReader(inputStream));
+            while ((line = reader.readLine()) != null) {
+                String[] separated = line.split(",");
+                if (separated.length == 3) {
+                    String name = separated[0];
+                    int initiative = Integer.parseInt(separated[1]);
+                    boolean isAlive = Boolean.parseBoolean(separated[2]);
+                    players.add(new Player(name, initiative, isAlive));
+                }
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            players = new ArrayList<>();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
         return players;
     }
 }

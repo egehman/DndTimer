@@ -14,6 +14,15 @@
         android:layout_toLeftOf="@id/player_init"
         android:text="@string/text_player_name"/>
 
+    <!--For testing purposes-->
+    <TextView
+        android:id="@+id/player_alive"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Is Alive" />
+
     <TextView
         android:id="@+id/player_init"
         android:layout_width="wrap_content"

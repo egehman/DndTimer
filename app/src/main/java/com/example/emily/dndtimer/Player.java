@@ -15,6 +15,12 @@ public class Player implements Parcelable {
         this.isAlive = true; //New players are always alive
     }
 
+    public Player(String name, int initiative, boolean isAlive) {
+        this.name = name;
+        this.initiative = initiative;
+        this.isAlive = isAlive;
+    }
+
     protected Player(Parcel in) {
         name = in.readString();
         initiative = in.readInt();

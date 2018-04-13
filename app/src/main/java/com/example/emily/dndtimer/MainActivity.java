@@ -1,14 +1,17 @@
 package com.example.emily.dndtimer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
@@ -37,6 +40,30 @@ public class MainActivity extends AppCompatActivity {
         playerList = getIntent().getParcelableArrayListExtra(Constants.KEY_PLAYERS);
         myAdapter = new PlayerListArrayAdapter(this, R.layout.item_row_main, playerList);
         lv.setAdapter(myAdapter);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        savePlayerList();
+    }
+
+    private void savePlayerList() {
+        FileOutputStream outputStream;
+        try {
+            outputStream = openFileOutput(Constants.FILE_PLAYERS, Context.MODE_PRIVATE);
+            StringBuilder sb = new StringBuilder();
+            for (Player p : playerList) {
+                sb.append(p.getName()).append(",")
+                        .append(p.getInitiative()).append(",")
+                        .append(p.isAlive()).append("\n");
+            }
+            outputStream.write(sb.toString().getBytes());
+            outputStream.close();
+        } catch (Exception e) {
+            Log.d(MainActivity.class.getSimpleName(), "Exception e" + e.toString());
+            e.printStackTrace();
+        }
     }
 
     private Player createPlayer(String name, String initiative) {

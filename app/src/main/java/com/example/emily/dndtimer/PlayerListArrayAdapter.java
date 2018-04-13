@@ -14,8 +14,11 @@ import java.util.Locale;
 
 public class PlayerListArrayAdapter extends ArrayAdapter<Player> {
 
+    private final int myResource;
+
     public PlayerListArrayAdapter(@NonNull Context context, int resource, ArrayList<Player> players) {
         super(context, resource, players);
+        myResource = resource;
     }
 
     @NonNull
@@ -28,10 +31,12 @@ public class PlayerListArrayAdapter extends ArrayAdapter<Player> {
 
         if (v == null) {
             LayoutInflater li = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-            v = li.inflate(R.layout.item_row_main, null);
+            assert li != null;
+            v = li.inflate(myResource, null);
             holder = new ViewHolder();
             holder.playerName = v.findViewById(R.id.player_name);
             holder.playerInit = v.findViewById(R.id.player_init);
+            holder.playerAlive = v.findViewById(R.id.player_alive);
             v.setTag(holder);
         } else {
             holder = (ViewHolder) v.getTag();
@@ -45,11 +50,16 @@ public class PlayerListArrayAdapter extends ArrayAdapter<Player> {
             holder.playerInit.setText(String.format(Locale.US, "%d", p.getInitiative()));
         }
 
+        if (p != null && holder.playerAlive != null) {
+            holder.playerAlive.setText(String.format(Locale.US, "%b", p.isAlive()));
+        }
+
         return v;
     }
 
     static class ViewHolder {
         TextView playerName;
         TextView playerInit;
+        TextView playerAlive;
     }
 }
